@@ -1,6 +1,8 @@
 package com.wemerson.cursomc.resources;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.wemerson.cursomc.domain.Categoria;
+import com.wemerson.cursomc.dto.CategoriaDTO;
 import com.wemerson.cursomc.services.CategoriaService;
 
 @RestController
@@ -22,12 +25,13 @@ public class CategoriaResource {
 	private CategoriaService service ;
 	
 	@RequestMapping(value="/{id}", method=RequestMethod.GET)
+	//@GetMapping("/{id}") pode ser substituido o de  cima por esse e usa sempre get quando o esperado do metodo é buscar algum dado
 	public ResponseEntity<Categoria> find(@PathVariable Integer id) {
 		Categoria obj = service.find(id);
 		return ResponseEntity.ok().body(obj);
-		
 	}
 	@RequestMapping(method = RequestMethod.POST)
+	//@PostMapping pode ser substituido o de  cima por esse e usa sempre Post quando o esperado do metodo é salvar algum registro
 	public ResponseEntity<Void> insert(@RequestBody Categoria obj) {
 		obj = service.insert(obj);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -36,6 +40,7 @@ public class CategoriaResource {
 	}
 
 	@RequestMapping(value="/{id}", method=RequestMethod.PUT)
+	//@PutMapping("/{id}") pode ser substituido o de  cima por esse e usa sempre Post quando o esperado do metodo é alterar algum registro
 	public ResponseEntity<Void> update(@RequestBody Categoria obj, @PathVariable Integer id) {
 		obj.setId(id);
 		obj = service.update(obj);
@@ -43,9 +48,19 @@ public class CategoriaResource {
 	}
 	
 	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
+	//@DeleteMapping("/{id}") pode ser substituido o de  cima por esse e usa sempre Post quando o esperado do metodo é deletar algum registro
 	public ResponseEntity<Void> delete(@PathVariable Integer id) {
 	service.delete(id);
 	return ResponseEntity.noContent().build();
 	}
+	
+	@RequestMapping(method=RequestMethod.GET)
+	public ResponseEntity<List<CategoriaDTO>> findAll() {
+		List<Categoria> list = service.findAll();
+		List<CategoriaDTO> listDto = list.stream().map(obj -> new CategoriaDTO(obj)).collect(Collectors.toList());
+		return ResponseEntity.ok().body(listDto);
+		
+	}
+	
 }
 
